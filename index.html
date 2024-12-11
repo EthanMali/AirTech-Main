@@ -163,14 +163,15 @@
                             <div>
                                 <a href="/product/${product.id}">
                                 <div class="product-image">
-                                    <img src="http://localhost:4000/${product.image}" alt="${product.name}">
+                                    <img src="https://ethanmali.github.io/AirTech-Main/public/images/${product.image}" alt="${product.name}">
                                 </div>
                                 <h2>${product.name}</h2>
                                 <p>$${(product.price / 100).toFixed(2)}</p>
                                 <p class="${stockClass} stock-message">${stockMessage}</p>
                             </div>
                             </a>
-                            <button ${product.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
+                            <button ${product.stock === 0 ? 'disabled' : ''} onclick="addToCart(${product.id})">Add to Cart</button>
+
                         
                     </div>
                 `;
@@ -181,22 +182,19 @@
 
         // Add to cart
         function addToCart(productId) {
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ id: productId, quantity: 1 });
-            }
-            cartCount++;
-            document.querySelector('.cart-btn-desktop').innerHTML = `<i class="fas fa-shopping-cart"></i> (${cartCount})`;
-
-            document.querySelector('.cart-icon').innerHTML = `<i class="fas fa-shopping-cart"></i> (${cartCount})`; // Update mobile cart count
+        console.log("Add to Cart clicked for product ID:", productId); // Debugging line
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ id: productId, quantity: 1 });
         }
+        cartCount++;
+        document.querySelector('.cart-btn-desktop').innerHTML = `<i class="fas fa-shopping-cart"></i> (${cartCount})`;
 
-        // Scroll to products
-        function scrollToProducts() {
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-        }
+        document.querySelector('.cart-icon').innerHTML = `<i class="fas fa-shopping-cart"></i> (${cartCount})`; // Update mobile cart count
+    }
+
     </script>
 </body>
 </html>
