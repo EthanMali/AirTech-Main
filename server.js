@@ -21,7 +21,7 @@ const upload = multer({ storage });
 
 // Dummy product data (replace with a real database in production)
 const products = [
-    { id: 1, name: 'AirPod Pro', price: 249, stock: 100, description: 'Premium wireless earphones', condition: 'New', image: 'airpod.jpg' }
+    { id: 1, name: 'AirPod Pro', price: 249, stock: 100, description: 'Premium wireless earphones', image: 'airpod.jpg' }
   ];
   
 // Middleware setup
@@ -49,10 +49,10 @@ app.get('/api/products/:id', (req, res) => {
 
 // Route to add a new product
 app.post('/api/products', (req, res) => {
-  const { name, price, stock, description, condition } = req.body;
+  const { name, price, stock, description } = req.body;
   
   // Validate the required fields
-  if (!name || !price || !stock || !description || !condition) {
+  if (!name || !price || !stock || !description) {
       return res.status(400).json({ message: 'All fields are required' });
   }
   
@@ -119,7 +119,6 @@ app.get('/product/:id', (req, res) => {
             <h1>${product.name}</h1>
             <img src="uploads/${product.image}" alt="${product.name}">
             <p>Price: $${product.price}</p>
-            <p>Condition: ${product.condition}</p>
             <p>Stock: ${product.stock}</p>
             <p>${product.description}</p>
         </body>
