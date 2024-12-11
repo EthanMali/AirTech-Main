@@ -3,44 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="product-title">Loading...</title>
+    <title>Product Page</title>
+    <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
-
-    <h1 id="product-name">Loading...</h1>
-
-    <div id="product-details">
-        <img id="product-image" src="" alt="Product Image">
-        <p id="product-price">Price: Loading...</p>
-        <p id="product-stock">Stock: Loading...</p>
-        <p id="product-description">Description: Loading...</p>
+    <div id="product-page">
+        <h1 id="product-name"></h1>
+        <img id="product-image" alt="Product image" />
+        <p id="product-description"></p>
+        <!-- Other product details like price, stock, etc. -->
     </div>
 
-    <script>
-        // Extract the product ID from the URL
-        const productId = window.location.pathname.split('/').pop();
-
-        // Fetch product data using the product ID
-        fetch(`http://localhost:4000/api/products/${productId}`)
-            .then(response => response.json())
-            .then(product => {
-                if (product) {
-                    // Populate the page with product details
-                    document.getElementById('product-title').textContent = `${product.name} - Product Details`;
-                    document.getElementById('product-name').textContent = product.name;
-                    document.getElementById('product-image').src = `/uploads/${product.image}`;
-                    document.getElementById('product-price').textContent = `Price: $${(product.price / 100).toFixed(2)}`;
-                    document.getElementById('product-stock').textContent = `Stock: ${product.stock}`;
-                    document.getElementById('product-description').textContent = `Description: ${product.description || 'No description available.'}`;
-                } else {
-                    document.getElementById('product-details').textContent = 'Product not found.';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching product data:', error);
-                document.getElementById('product-details').textContent = 'An error occurred while loading the product.';
-            });
-    </script>
-
+    <!-- Include the product page JavaScript -->
+    <script src="productPage.js"></script>
 </body>
 </html>
