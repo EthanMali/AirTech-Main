@@ -86,15 +86,25 @@
         // Form submission for adding products
         document.getElementById('addProductForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
+            const name = document.getElementById('name').value.trim();
             const price = parseFloat(document.getElementById('price').value);
             const stock = parseInt(document.getElementById('stock').value);
-            
+            const description = document.getElementById('description').value.trim(); // Add description
+            const imageFile = document.getElementById('image').files[0];
+
+            // Check if any field is empty
+            if (!name || !price || !stock || !description || !imageFile) {
+                document.getElementById('responseMessage').textContent = 'All fields are required.';
+                return; // Stop the form submission if any field is empty
+            }
+
             const formData = new FormData();
-            formData.append('name', document.getElementById('name').value);
+            formData.append('name', name);
             formData.append('price', price);
             formData.append('stock', stock);
-            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('description', description); // Append description
+            formData.append('image', imageFile);
 
             try {
                 const response = await fetch('http://localhost:4000/api/products', {
