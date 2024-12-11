@@ -48,28 +48,30 @@ app.get('/api/products/:id', (req, res) => {
 });
 
 // Route to add a new product
-app.post('/api/products', (req, res) => {
-  const { name, price, stock, description } = req.body;
-  
-  // Validate the required fields
-  if (!name || !price || !stock || !description) {
-      return res.status(400).json({ message: 'All fields are required' });
-  }
-  
-  // Save to database (example, replace with actual database logic)
-  const newProduct = {
-      name,
-      price,
-      stock,
-      description,
-      image: req.file.filename  // Handle image upload if any
-  };
+app.post('/api/products', upload.single('image'), (req, res) => {
+    const { name, price, stock, description } = req.body;
+    const image = req.file;
 
-  // Example: saving to an in-memory array
-  products.push(newProduct);  // Replace with actual database logic
+    // Validate that all required fields are provided
+    if (!name || !price || !stock || !description || !image) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
 
-  res.status(201).json(newProduct);
+    // Here you would save the product data to your database
+    // For now, we simulate the saving process
+    const newProduct = {
+        id: Date.now(),
+        name,
+        price,
+        stock,
+        description, // Include description
+        imageUrl: `/uploads/${image.filename}` // Assuming image is saved in the 'uploads' folder
+    };
+
+    // Respond with the new product data
+    res.status(200).json(newProduct);
 });
+
 
 
 
