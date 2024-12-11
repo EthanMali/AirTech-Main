@@ -148,4 +148,3 @@ app.get('/api/products', (req, res) => {
 });
 
 
-console.log(product.id); // Check if the ID is correct
