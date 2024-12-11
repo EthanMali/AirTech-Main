@@ -2,31 +2,36 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
+const fs = require('fs');
 const app = express();
 const port = 4000;
 
-
+// Create 'uploads' directory if it doesn't exist
+const uploadsDir = 'https://ethanmali.github.io/AirTech-Main/uploads';
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
 
 // Setup multer for file storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads'); // Ensure this folder exists
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique filenames based on the current timestamp
-  },
-});
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      console.log('Uploading file:', file); // Log the file object
+      cb(null, Date.now() + path.extname(file.originalname)); // Ensure this creates a unique filename
+    },
+  });
+  
 
 const upload = multer({ storage });
 
 // Dummy product data (replace with a real database in production)
-const products = [
-    { id: 1, name: 'AirPod Pro', price: 249, stock: 100, description: 'Premium wireless earphones', image: 'airpod.jpg' }
-  ];
-  
+let products = []; // Initialize the products array
+
 // Middleware setup
 app.use(cors()); // Enable CORS for all routes
-app.use(express.json()); // For parsing application/json
+app.use(express.json()); // For parsing application/json (if needed for other fields, like in APIs)
 app.use(express.static('uploads')); // Serve static files (images, etc.) from the 'uploads' folder
 
 // Route to get all products
@@ -49,31 +54,29 @@ app.get('/api/products/:id', (req, res) => {
 
 // Route to add a new product
 app.post('/api/products', upload.single('image'), (req, res) => {
+    console.log('File uploaded:', req.file); // Log the file object to check
     const { name, price, stock, description } = req.body;
     const image = req.file;
-
+  
     // Validate that all required fields are provided
     if (!name || !price || !stock || !description || !image) {
-        return res.status(400).json({ message: 'All fields are required.' });
+      return res.status(400).json({ message: 'All fields are required.' });
     }
-
-    // Here you would save the product data to your database
-    // For now, we simulate the saving process
+  
     const newProduct = {
-        id: Date.now(),
-        name,
-        price,
-        stock,
-        description, // Include description
-        imageUrl: `/uploads/${image.filename}` // Assuming image is saved in the 'uploads' folder
+      id: Date.now(),
+      name,
+      price,
+      stock,
+      description,
+      imageUrl: `AirTech-Main/public/images/${image.filename}`
     };
-
-    // Respond with the new product data
+  
+    products.push(newProduct);
+  
     res.status(200).json(newProduct);
-});
-
-
-
+  });
+  
 
 // Route to delete a product
 app.delete('/api/products/:id', (req, res) => {
@@ -119,7 +122,7 @@ app.get('/product/:id', (req, res) => {
         </head>
         <body>
             <h1>${product.name}</h1>
-            <img src="uploads/${product.image}" alt="${product.name}">
+            <img src="${product.imageUrl}" alt="${product.name}"> <!-- Updated path -->
             <p>Price: $${product.price}</p>
             <p>Stock: ${product.stock}</p>
             <p>${product.description}</p>
@@ -135,17 +138,3 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
-
-
-app.get('/api/products', (req, res) => {
-  // Assuming you have a product model
-  Product.find().then(products => {
-      // Ensure 'condition' exists in the response
-      products.forEach(product => {
-          product.condition = product.condition || "Condition not specified";  // Default fallback
-      });
-      res.json(products);
-  });
-});
-
-

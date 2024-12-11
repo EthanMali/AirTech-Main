@@ -11,20 +11,21 @@
     <!-- Form for adding products -->
     <form id="addProductForm" enctype="multipart/form-data">
         <label for="name">Product Name:</label>
-        <input type="text" id="name" required>
+        <input type="text" id="name" name="name">
 
         <label for="price">Price:</label>
-        <input type="number" id="price" required>
+        <input type="number" id="price" name="price">
 
         <label for="stock">Stock Quantity:</label>
-        <input type="number" id="stock" required>
+        <input type="number" id="stock" name="stock">
 
         <label for="description">Product Description:</label>
-        <textarea id="description" required></textarea>
+        <textarea id="description" name="description"></textarea>
     
 
         <label for="image">Product Image:</label>
-        <input type="file" id="image" accept="image/*" required>
+        <input type="file" id="image" name="image" accept="image/*">
+
 
         <button type="submit">Add Product</button>
     </form>
