@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+
+    <!-- Form for adding products -->
+    <form id="addProductForm" enctype="multipart/form-data">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" required>
+
+        <label for="stock">Stock Quantity:</label>
+        <input type="number" id="stock" required>
+
+        <label for="description">Product Description:</label>
+        <textarea id="description" required></textarea>
+    
+
+        <label for="image">Product Image:</label>
+        <input type="file" id="image" accept="image/*" required>
+
+        <button type="submit">Add Product</button>
+    </form>
+
+    <div id="responseMessage"></div>
+
+    <h2>Product List</h2>
+    <div id="productList">Loading...</div>
+
+    <!-- The script should be placed here, before the closing body tag -->
+    <script>
+        // Function to fetch products and display them
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:4000/api/products');
+                const products = await response.json();
+                
+                if (response.ok) {
+                    const productListDiv = document.getElementById('productList');
+                    if (products.length === 0) {
+                        productListDiv.innerHTML = 'No products available.';
+                        return;
+                    }
+                    
+                    productListDiv.innerHTML = products.map(product => `
+                        <div class="product-item">
+                            <p><strong>${product.name}</strong></p>
+                            <p>Price: $${(product.price / 100).toFixed(2)}</p>
+                            <p>Stock: ${product.stock}</p>
+                            <button onclick="deleteProduct(${product.id})">Delete</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('productList').textContent = 'Failed to fetch products.';
+                }
+            } catch (error) {
+                document.getElementById('productList').textContent = 'An error occurred while fetching products.';
+            }
+        }
+
+        // Function to delete a product
+        async function deleteProduct(productId) {
+            try {
+                const response = await fetch(`http://localhost:4000/api/products/${productId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    document.getElementById('responseMessage').textContent = 'Product deleted successfully!';
+                    fetchProducts(); // Refresh the product list
+                } else {
+                    const result = await response.json();
+                    document.getElementById('responseMessage').textContent = `Error: ${result.message}`;
+                }
+            } catch (error) {
+                document.getElementById('responseMessage').textContent = 'An error occurred while deleting the product.';
+            }
+        }
+
+        // Form submission for adding products
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('price', price);
+            formData.append('stock', stock);
+            formData.append('image', document.getElementById('image').files[0]);
+
+            try {
+                const response = await fetch('http://localhost:4000/api/products', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('responseMessage').textContent = 'Product added successfully!';
+                    fetchProducts(); // Refresh the product list
+                } else {
+                    document.getElementById('responseMessage').textContent = `Error: ${result.message}`;
+                }
+            } catch (error) {
+                document.getElementById('responseMessage').textContent = 'An error occurred while adding the product.';
+            }
+        });
+
+        // Fetch products on page load
+        fetchProducts();
+    </script>
+</body>
+</html>
